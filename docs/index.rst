@@ -9,7 +9,8 @@
 .. toctree::
    :maxdepth: 2
    :caption: Содержание
-   install_centos
+   
+   install-centos
 
 
 
