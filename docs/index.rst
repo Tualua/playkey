@@ -9,14 +9,5 @@
 .. toctree::
    :maxdepth: 2
    :caption: Содержание
-   
+
    install-centos
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
