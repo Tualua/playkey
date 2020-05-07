@@ -53,8 +53,10 @@
 
 .. image:: /images/install-part-accept.png
 
-Возвращаемся на экран INSTALLATION SUMMARY. В раздеде DATE & TIME выставьте нужный часовой пояс, в разделе LANGUAGE SUPPORT добавьте необходимые языки (необязательно).
-После этого выберите NETWORK & HOST NAME
+Настройка сетевого подключения
+==============================
+
+На экране INSTALLATION SUMMARY выберите NETWORK & HOST NAME.
 
 .. image:: /images/install-net1.png
 
@@ -62,10 +64,14 @@
 
 .. image:: /images/install-net1.png
 
-После завершения настройки сети нажмите кнопку Done, что в очередной раз вернет Вас на экран INSTALLATION SUMMARY и в правом нижем углу нажмите Begin Installation
+После завершения настройки сети нажмите кнопку Done.
+
+Прочие настройки
+================
+
+В разделе DATE & TIME выставьте нужный часовой пояс, в разделе LANGUAGE SUPPORT добавьте необходимые языки (необязательно) и после возврата на экран INSTALLATION SUMMARY в правом нижем углу нажмите Begin Installation.
 
 .. image:: /images/install-begin.png
-
 
 
 
