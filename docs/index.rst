@@ -11,3 +11,4 @@
    :caption: Содержание
 
    install-centos
+   install-gameserver
