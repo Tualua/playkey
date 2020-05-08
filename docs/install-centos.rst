@@ -227,7 +227,7 @@ nano - удобный консольный текстовый редактор, 
    yum-config-manager --disable ol7_latest
    yum -y install kernel-uek --enablerepo=ol7_latest
 
-После установки перезагрузите компьютер командой :bash:`reboot`, после чего проверьте что загрузилось новое ядро командой :bash:`uname -r`
+После установки перезагрузите компьютер командой :bash:`reboot`, после чего проверьте, что новое ядро загрузилось, командой :bash:`uname -r`
 
 .. code-block::
 
