@@ -56,7 +56,7 @@ function get_gpu()
 {
     local vm_name=$1
     local filter=$2
-    args='"arg":["--query-gpu=gpu_name,pcie.link.gen.current,memory.total,temperature.gpu,utilization.gpu,utilization.memory,power.draw", "--format=csv,noheader,nounits"],"capture-output":t$
+    args='"arg":["--query-gpu=gpu_name,pcie.link.gen.current,memory.total,temperature.gpu,utilization.gpu,utilization.memory,power.draw", "--format=csv,noheader,nounits"],"capture-output":true'
     res=$(exec_command "$vm_name" "C:/Program Files/NVIDIA Corporation/NVSMI/nvidia-smi.exe" "$args") && get_output "$vm_name" "$res" 5
 }
 
