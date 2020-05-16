@@ -37,11 +37,7 @@ def get_last_session(domainName):
     else:
         last_session_status = 'Active'
     
-    session = {        
-        '{#GAME}' : last_game,
-        '{#SESSION}' : last_session_id,
-        '{#SESSIONSTATUS}' : last_session_status,
-    }
+    session = [last_game, last_session_id, last_session_status]
     return session
 
 def guest_exec(domain, cmd, args=[], timeout=6, flags=0):
@@ -91,26 +87,15 @@ def get_gpu_info(domain):
             ["--query-gpu=name,pcie.link.gen.current,temperature.gpu,utilization.gpu,utilization.memory,power.draw","--format=csv,nounits,noheader"])    
     if pid:
         response = guest_exec_get_response(domain, pid)
-        values = response.splitlines()[0].split(", ")
-        result['{#VMNAME}'] = domain.name()
-        result['{#GPUNAME}'] = values[0]
-        result['{#GPUPCIELINK}'] = values[1]
-        result['{#GPUTEMP}'] = values[2]
-        result['{#GPUUTIL}'] = values[3]
-        result['{#GPUMEMUTIL}'] = values[4]
-        result['{#GPUPOWER}'] = values[5]
+        result = response.splitlines()[0].split(", ")        
     else:
-        result['{#VMNAME}'] = domain.name()
-        result['{#GPUNAME}'] = "Not running"
-        result['{#GPUPCIELINK}'] = "Not running"
-        result['{#GPUTEMP}'] = "Not running"
-        result['{#GPUUTIL}'] = "Not running"
-        result['{#GPUMEMUTIL}'] = "Not running"
-        result['{#GPUPOWER}'] = "Not running"
+        result = ['',0,0,0,0,0,0]
     return result
 
 vmsinfo = {}
-vmsinfo["data"] = []
+vmsinfo["values"] = {}
+vmsinfo["lld"] = []
+
 
 conn = libvirt.open('qemu:///system')
 if conn == None:
@@ -121,16 +106,20 @@ defined_servers = get_servers()
 active_servers = []
 if defined_servers:
     for server in defined_servers:
+        vmsinfo["lld"].append({'{#VMNAME}' : server})
+        vmsinfo["values"].update({server:[]})
         dom = conn.lookupByName(server)
         if dom != None:
+            vmsinfo["values"][server].append("up")
             active_servers.append(dom)
-
+        else:
+            vmsinfo["values"][server].append("down")
+            vmsinfo["values"][server].extend(['',0,0,0,0,0,0])
+            vmsinfo["values"][server].extend(get_last_session(server.name()))
 if active_servers:
     for server in active_servers:
-        vminfo = {}
-        vminfo.update(get_gpu_info(server))        
-        vminfo.update(get_last_session(server.name()))
-        vmsinfo["data"].append(vminfo)
+        vmsinfo["values"][server.name()].extend(get_gpu_info(server))
+        vmsinfo["values"][server.name()].extend(get_last_session(server.name()))
 
 print json.dumps(vmsinfo, sort_keys=True, indent=4)
 
