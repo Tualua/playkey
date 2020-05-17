@@ -1,4 +1,5 @@
 #!/usr/bin/python
+
 import json, time, sys, subprocess, numpy as np, operator
 import xml.etree.ElementTree as ET
 
@@ -11,7 +12,6 @@ def get_servers(path="/usr/local/etc/gameserver/conf.xml"):
     return vms
 
 def get_sessions(domainName):
-    # sessions_end = {}
     sessions = {}
     command = subprocess.Popen('journalctl -o short-iso --since=yesterday --no-pager -tgameserver/{} -r ' \
                                 '|grep -B1 -E \"driveName\"|grep -v -e \"windows\" -e \"launchers\"'.format(domainName),
@@ -38,7 +38,6 @@ def get_sessions(domainName):
     
     for session in data:
         session_id = session.rsplit(' ')[-1].strip()
-        #session_time = time.strptime(session.split(' ')[0][:-5], "%Y-%m-%dT%H:%M:%S")
         session_end_time = session.split(' ')[0][:-5].replace('T',' ')
         sessions[session_id][1] = session_end_time
     
@@ -51,11 +50,12 @@ def get_sessions(domainName):
                 stdout=subprocess.PIPE, 
                 stderr=subprocess.STDOUT)
             stdout,stderr = command.communicate()
+            minutes = (time.mktime(time.strptime(session_data[1], "%Y-%m-%d %H:%M:%S")) - time.mktime(time.strptime(session_data[0], "%Y-%m-%d %H:%M:%S")))/60
             data = np.array([int(val) for val in stdout.split('\n')[:-1]])
             if len(data)>0:
-                sessions[session_id].append(round(np.percentile(data, 99),0))
+                sessions[session_id].extend([int(minutes), int(np.percentile(data, 99)),])
             else:
-                sessions[session_id].append(0)
+                sessions[session_id].extend([int(minutes), 0])
 
 
     return sessions
@@ -69,5 +69,6 @@ for vm in vms:
     sessions[vm] = get_sessions(vm)
 
 for vm in sessions:
+    print("---------------------{}---------------------".format(vm))
     for k,v in sorted(sessions[vm].items(), key=operator.itemgetter(0)):
         print(k, v)
