@@ -90,7 +90,7 @@ def get_fps_stats(data):
 def get_latency_stats(data):
     if len(data)>0:
         ping = np.array(data)
-        p = np.percentile(ping, 25)
+        p = np.percentile(ping, 75)
         return int(p)
     else:
         return 9999
