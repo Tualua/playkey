@@ -181,14 +181,14 @@
     yum -y install pv
 
 В первую очередь нужно передать на новый хост данные системного диска виртуальной машины. Имя датасета - **data/kvm/desktop/windows**
-Определите имя последнего снимка этого датасета, в примере это 270.
+Определите имя последнего снимка этого датасета, в примере это 270. Так же, для первоначального запуска понадобится датасет **data/kvm/desktop/launchers** и **data/kvm/desktop/gta5**
 
 Передача осуществляется командой :bash:`zfs send -v <dataset@snapshot> | pv -L <максимальная скорость> | ssh <IP address> zfs recv <dataset>`
 Например, для того чтобы скопировать системный диск виртуальной машины с ограничением максимальной скорости 50МБайт/сек на хост с адресом 192.168.50.10:
 
 .. code-block:: bash
 
-    zfs send -v data/kvm/desktop/windows@270 |  pv -L 50M | ssh 192.168.50.10 zfs recv data/kvm/desktop/windows
+    zfs send -v data/kvm/desktop/windows@270 | pv -L 50M | ssh 192.168.50.10 zfs recv data/kvm/desktop/windows
 
 Точно таким же образом необходимо скопировать нужные игры:
 
