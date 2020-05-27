@@ -29,7 +29,7 @@ def exec_shell_command(command):
 
 #Read GameServer log for <vm> for <start>-<end> timeframe. 
 def get_log(domainName, start, end, reverse=False, debug=False):
-    jctl_options = ["-o short-iso -b"]
+    jctl_options = ["-o short-iso"]
     jctl_options.append("--no-pager -tgameserver/{}".format(domainName))
     
     if start:
@@ -90,7 +90,7 @@ def get_fps_stats(data):
 def get_latency_stats(data):
     if len(data)>0:
         ping = np.array(data)
-        p = np.percentile(ping, 25)
+        p = np.percentile(ping, 75)
         return int(p)
     else:
         return 9999
