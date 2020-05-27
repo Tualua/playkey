@@ -52,12 +52,149 @@
 .. code-block:: bash
 
     zpool create -o ashift=13 -f data /dev/nvme0n1
+    zfs create -p /data/kvm/desktop
 
 В случае, если Вы уже скачивали образы игр PlayKey на этот диск, выполните следующую команду:
 
 .. code-block:: bash
 
     zpool import data
+
+Копирование игр с другого хоста
+===============================
+
+В случае, если у Вас уже есть работающий хост с GameServer, Вы можете скачать игры с него. Процедуру необходимо делать под пользователем **root**.
+
+На новом хосте создайте папку для хранения ключей и настройте права доступа:
+
+.. code-block:: bash
+
+    mkdir /root/.ssh
+    chmod 700 /root/.ssh
+
+Включите авторизацию по открытому ключу для **ssh**. Для этого отредактируйте конфигурационный файл демона sshd командой :bash:`nano /etc/ssh/sshd_config` и найдите там строчку *PubkeyAuthentication*. Раскомментируйте ее (удалите символ **#** в начале строки). Строка должна выглядеть так:
+
+.. code-block:: bash
+
+    PubkeyAuthentication yes
+
+Сохраните файл, выйдите из редактора и перезапустите демон sshd командой:
+
+.. code-block:: bash
+
+    systemctl restart sshd
+
+Сгенерируйте SSH-ключи для пользователя root на уже работающем хосте:
+
+.. code-block:: bash
+
+    sudo su
+    ssh-keygen -t ecdsa -b 521
+
+Путь для ключа оставьте по умолчанию (просто нажмите Enter), кодовую фразу тоже вводить не нужно. Примерный вывод результатов:
+
+.. code-block:: bash
+
+    # ssh-keygen -t ecdsa -b 521
+    Generating public/private ecdsa key pair.
+    Enter file in which to save the key (/root/.ssh/id_ecdsa):
+    Enter passphrase (empty for no passphrase):
+    Enter same passphrase again:
+    Your identification has been saved in /root/.ssh/id_ecdsa.
+    Your public key has been saved in /root/.ssh/id_ecdsa.pub.
+    The key fingerprint is:
+    SHA256:BKKNlwGDVTAAw5Hwq2E6D31Z+FgMORJm2UFpnJ08XWY root@hostname
+    The key's randomart image is:
+    +---[ECDSA 521]---+
+    |O=%O**.o .E      |
+    |.B.B*==..o       |
+    |  =.B  ..        |
+    |   + = .         |
+    |... . + S        |
+    |o+   *           |
+    |= . + .          |
+    | + .             |
+    |  .              |
+    +----[SHA256]-----+
+
+Теперь передайте открытый ключ на новый хост
+
+.. code-block:: bash
+
+    scp /root/.ssh/id_ecdsa.pub <IP-адрес нового хоста>:/root/.ssh/authorized_keys
+
+После этого на новом хосте задайте нужные права на файл **authorized_keys**:
+
+.. code-block:: bash
+
+    chmod 600 /root/.ssh/authorized_keys
+
+Теперь проверьте подключение со старого хоста на новый:
+
+.. code-block:: bash
+
+    ssh <IP-адрес нового хоста>
+
+Подключение должно осуществиться без запроса пароля. Для завершения подключения введите команду :bash:`exit`
+
+Для просмотра игр, установленных на старом хосте, дайте команду :bash:`zfs list -t snapshot`. Вывод будет примерно таким:
+
+.. code-block:: bash
+
+    # zfs list -t snapshot
+    NAME                                                                USED  AVAIL  REFER  MOUNTPOINT
+    data/kvm/desktop/csgo@1134                                         2.15M      -  21.5G  -
+    data/kvm/desktop/csgo@1182                                            0B      -  21.5G  -
+    data/kvm/desktop/dota2@2742                                         325M      -  28.4G  -
+    data/kvm/desktop/dota2@2787                                           0B      -  28.4G  -
+    data/kvm/desktop/fortnite@2474                                     3.78M      -  83.5G  -
+    data/kvm/desktop/fortnite@2504                                        0B      -  83.5G  -
+    data/kvm/desktop/gta5@2649                                         3.41M      -  90.2G  -
+    data/kvm/desktop/gta5@2664                                            0B      -  90.2G  -
+    data/kvm/desktop/launchers@2793                                    25.8M      -  3.29G  -
+    data/kvm/desktop/launchers@2823                                       0B      -  3.29G  -
+    data/kvm/desktop/overwatch@2665                                    2.62M      -  24.2G  -
+    data/kvm/desktop/overwatch@2680                                       0B      -  24.2G  -
+    data/kvm/desktop/pubg@2066                                         1.59G      -  28.5G  -
+    data/kvm/desktop/pubg@2775                                            0B      -  28.9G  -
+    data/kvm/desktop/rdr2@125                                          3.58G      -   117G  -
+    data/kvm/desktop/rdr2@592                                             0B      -   117G  -
+    data/kvm/desktop/tarkov@1373                                          0B      -  17.9G  -
+    data/kvm/desktop/thestore@2070                                     1.74G      -  1.74G  -
+    data/kvm/desktop/thestore@2084                                        0B      -  13.1G  -
+    data/kvm/desktop/twwarhammer2@400                                  56.0G      -  56.2G  -
+    data/kvm/desktop/twwarhammer2@2227                                    0B      -  57.5G  -
+    data/kvm/desktop/windows@139                                       7.83G      -  36.8G  -
+    data/kvm/desktop/windows@231                                        966M      -  36.8G  -
+    data/kvm/desktop/windows@270                                          0B      -  36.8G  -
+    data/kvm/desktop/windows-vm1-270@d35b669fefa7f4255adaa804abf6895d    16K      -  36.8G  -
+    data/kvm/desktop/witcher3@230                                         0B      -  55.6G  -
+    data/kvm/desktop/wow@2681                                           203M      -  73.9G  -
+    data/kvm/desktop/wow@2801                                             0B      -  74.0G  -
+
+Данные выводятся в формате <dataset>@<snapshot>, т.е. :bash:`data/kvm/desktop/rdr2@125` означает датасет с именем **data/kvm/desktop/rdr2**, снимок **125**. Как можно заметить, снимков несколько, т.к. игры периодически обновляются. Нас интересуют только последние снимки.
+
+Очень полезным будет установить утилиту **pv**, которая позволит ограничить скорость передачи данных с хоста. Это необходимо, если Вы планируете копировать игры с хоста, на котором в данный момент играют пользователи.
+
+.. code-block:: bash
+
+    yum -y install pv
+
+В первую очередь нужно передать на новый хост данные системного диска виртуальной машины. Имя датасета - **data/kvm/desktop/windows**
+Определите имя последнего снимка этого датасета, в примере это 270.
+
+Передача осуществляется командой :bash:`zfs send -v <dataset@snapshot> | pv -L <максимальная скорость> | ssh <IP address> zfs recv <dataset>`
+Например, для того чтобы скопировать системный диск виртуальной машины с ограничением максимальной скорости 50МБайт/сек на хост с адресом 192.168.50.10:
+
+.. code-block:: bash
+
+    zfs send -v data/kvm/desktop/windows@270 |  pv -L 50M | ssh 192.168.50.10 zfs recv data/kvm/desktop/windows
+
+Точно таким же образом необходимо скопировать нужные игры:
+
+.. code-block:: bash
+
+    zfs send -v data/kvm/desktop/csgo@1182 | pv -L 50M | ssh 192.168.50.10 zfs recv data/kvm/desktop/csgo
 
 Настройка сети
 ==============
