@@ -164,9 +164,9 @@
 
 .. code-block:: none
 
-   [elastic-7.x]
-   name=Elastic repository for 7.x packages
-   baseurl=https://artifacts.elastic.co/packages/7.x/yum
+   [elastic-6.x]
+   name=Elastic repository for 6.x packages
+   baseurl=https://artifacts.elastic.co/packages/6.x/yum
    gpgcheck=1
    gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
    enabled=1
@@ -280,7 +280,8 @@ ZFS - продвинутая файловая система, которая н�
 
 .. code-block:: bash
 
-   yum -y install atop htop tcpdump telnet net-tools iptables-services iptables iscsi-initiator-utils bind-utils curl bridge-utils pciutils ntp filebeat
+   yum -y install atop htop tcpdump telnet net-tools iptables-services iptables iscsi-initiator-utils bind-utils curl bridge-utils pciutils ntp
+   yum -y install filebeat-6.6.1-1
 
 Настройка сети
 ==============
