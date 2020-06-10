@@ -51,7 +51,7 @@
 
 .. code-block:: bash
 
-    zpool create -o ashift=13 -f data /dev/nvme0n1
+    zpool create -o ashift=12 -f data /dev/nvme0n1
     zfs create -p data/kvm/desktop
 
 В случае, если Вы уже скачивали образы игр PlayKey на этот диск, выполните следующую команду:
