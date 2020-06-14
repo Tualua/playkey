@@ -1,0 +1,1 @@
+UserParameter=playkey.vms,sudo /scripts/vminfo2.py 2>/dev/null
