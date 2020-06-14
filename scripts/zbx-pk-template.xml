@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>5.0</version>
-    <date>2020-06-14T08:10:27Z</date>
+    <date>2020-06-14T08:47:53Z</date>
     <groups>
         <group>
             <name>PlayKey Hosts</name>
@@ -404,7 +404,7 @@
                     </item_prototypes>
                     <graph_prototypes>
                         <graph_prototype>
-                            <name>VM Load</name>
+                            <name>{#VMNAME} Load</name>
                             <width>600</width>
                             <ymin_type_1>FIXED</ymin_type_1>
                             <ymax_type_1>FIXED</ymax_type_1>
