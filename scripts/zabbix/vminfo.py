@@ -148,13 +148,34 @@ if defined_servers:
     for server in defined_servers:
         vmsinfo["lld"].append({'{#VMNAME}' : server})
         vmsinfo["values"].update({server:{}})
-        dom = conn.lookupByName(server)
-        if dom != None:
+        try:
+            dom = conn.lookupByName(server)
+        except libvirt.libvirtError:
+            vmsinfo["values"][server]['status'] = "down"
+            vmsinfo["values"][server]['gpu'] = {
+                'name' : '',
+                'memory' : 0,
+                'pciegen' : 0,
+                'temp' : 0,
+                'util' : 0,
+                'memutil' : 0,
+                'power' : 0,
+                'fans' : 0
+            }
+            vmsinfo["values"][server]['memory'] = {
+                'total' : 0,
+                'free' : 0,
+                'util' :0,
+            }
+            vmsinfo["values"][server]['cpu'] = {
+                'cores' : 0,
+                'threads' : 0,
+                'threadcount' : 0,
+                'util' : 0
+            }
+        else:
             vmsinfo["values"][server]['status'] = "up"
             active_servers.append(dom)
-        else:
-            vmsinfo["values"][server]['status'] = "down"
-            vmsinfo["values"][server].extend(['',0,0,0,0,0,0])
 if active_servers:
     for server in active_servers:
         vmsinfo["values"][server.name()]['gpu'] = get_gpu_info(server)
