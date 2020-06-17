@@ -1,8 +1,29 @@
+### Подготовка
+
+#### Пользователи и директории
+
+    groupadd scripts
+    usermod root -aG scripts
+    usermod gamer -aG scripts
+    usermod zabbix -aG scripts
+    mkdir /scripts
+    chown root:scripts /scripts
+    chmod g+s /scripts
+    
 #### gsinfo.py
 
     yum -y install python2-pip
     yum -y install systemd-python
     pip install --upgrade pip
+
+### Установка
+
+    wget https://raw.githubusercontent.com/Tualua/playkey/master/scripts/zabbix/gsinfo.py -O /scripts/gsinfo.py
+    wget https://raw.githubusercontent.com/Tualua/playkey/master/scripts/zabbix/vminfo.py -O /scripts/vminfo.py
+    chmod +x /scripts/*.py
+    wget https://raw.githubusercontent.com/Tualua/playkey/master/scripts/zabbix/gsinfo.service -O /lib/systemd/system/gsinfo.service
+    systemctl daemon-reload
+    systemctl enable gsinfo --now
     
 #### sudo
 
