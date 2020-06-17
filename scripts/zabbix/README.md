@@ -1,3 +1,9 @@
+#### gsinfo.py
+
+    yum -y install python2-pip
+    yum -y install systemd-python
+    pip install --upgrade pip
+    
 #### sudo
 
 Агент должен запускаться от имени пользователя, который имеет право пользоваться sudo. Вы можете использовать уже существующего пользователя gamer, но лучше будет наделить этим правом пользователя zabbix
