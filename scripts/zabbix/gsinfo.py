@@ -21,6 +21,7 @@ def get_zabbix_conf(path='/etc/zabbix/zabbix_agentd.conf'):
         if '127.0.0.1' in servers:
             servers.remove('127.0.0.1')
     zabbix_server = servers[0].replace('\n','')
+    zbx_conf.close()
     return zabbix_server, agent_hostname
 
 #Read VM names from GameServer config
