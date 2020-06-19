@@ -42,6 +42,14 @@
 
     semanage permissive -a zabbix_agent_t
 
+#### Zabbix Agent
+
+Добавьте строки из файла zabbix_agentd.conf. Раскомментируйте нужные строки в зависимости от того, какой у Вас процессор. Для AMD потребуется https://github.com/ocerman/zenpower. Установите и настройте lm_sensors. 
+
+#### Zabbix Server
+
+Импортируйте шаблон и привяжите к нужным хостам
+
 #### Возможные проблемы
 
 Если Zabbix не получает _Template PlayKey: Get VM data_ с ошибкой _timeout while executing a shell script_, увеличьте параметр Timeout в конфигурационых файлах Zabbix Server и Zabbix Agent
