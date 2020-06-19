@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>5.0</version>
-    <date>2020-06-19T03:35:43Z</date>
+    <date>2020-06-19T06:18:54Z</date>
     <groups>
         <group>
             <name>PlayKey Hosts</name>
@@ -575,7 +575,7 @@
                             <key>playkey.vm.mem_util[{#VMNAME}]</key>
                             <delay>0</delay>
                             <value_type>FLOAT</value_type>
-                            <units>bytes</units>
+                            <units>%</units>
                             <application_prototypes>
                                 <application_prototype>
                                     <name>{#VMNAME}</name>
@@ -616,7 +616,7 @@
                     </item_prototypes>
                     <graph_prototypes>
                         <graph_prototype>
-                            <name>{#VMNAME} Utilization</name>
+                            <name>{#VMNAME} Utilization {{HOST.HOST1}:playkey.gs.session.game[vm1].last()}</name>
                             <width>600</width>
                             <ymin_type_1>FIXED</ymin_type_1>
                             <ymax_type_1>FIXED</ymax_type_1>
@@ -669,6 +669,7 @@
                                     <sortorder>5</sortorder>
                                     <color>6C59DC</color>
                                     <yaxisside>RIGHT</yaxisside>
+                                    <calc_fnc>ALL</calc_fnc>
                                     <item>
                                         <host>Template PlayKey</host>
                                         <key>playkey.gs.fps.present[{#VMNAME}]</key>
@@ -677,6 +678,7 @@
                                 <graph_item>
                                     <sortorder>6</sortorder>
                                     <color>611F27</color>
+                                    <calc_fnc>ALL</calc_fnc>
                                     <item>
                                         <host>Template PlayKey</host>
                                         <key>playkey.gs.fps.customer[{#VMNAME}]</key>
@@ -685,6 +687,7 @@
                                 <graph_item>
                                     <sortorder>7</sortorder>
                                     <color>F230E0</color>
+                                    <calc_fnc>ALL</calc_fnc>
                                     <item>
                                         <host>Template PlayKey</host>
                                         <key>playkey.vm.gpu_encfps[{#VMNAME}]</key>
