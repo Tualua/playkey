@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>5.0</version>
-    <date>2020-06-19T06:18:54Z</date>
+    <date>2020-06-19T10:06:38Z</date>
     <groups>
         <group>
             <name>PlayKey Hosts</name>
@@ -264,6 +264,14 @@
                                     <name>{#VMNAME}</name>
                                 </application_prototype>
                             </application_prototypes>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last(#1)}&lt;&gt;&quot;&quot;</expression>
+                                    <name>{#VMNAME} Session Start on {HOST.NAME}:{ITEM.VALUE}</name>
+                                    <opdata>Current game: {ITEM.VALUE}</opdata>
+                                    <priority>INFO</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
                         </item_prototype>
                         <item_prototype>
                             <name>{#VMNAME} Session ID</name>
@@ -616,7 +624,7 @@
                     </item_prototypes>
                     <graph_prototypes>
                         <graph_prototype>
-                            <name>{#VMNAME} Utilization {{HOST.HOST1}:playkey.gs.session.game[vm1].last()}</name>
+                            <name>{#VMNAME} Utilization {{HOST.HOST1}:playkey.gs.session.game[{#VMNAME}].last()}</name>
                             <width>600</width>
                             <ymin_type_1>FIXED</ymin_type_1>
                             <ymax_type_1>FIXED</ymax_type_1>
