@@ -82,8 +82,8 @@ while p.poll():
                 print("Session started at {}: {}".format(vm, session[vm]['id']))
                 zbx_session_id = ZabbixMetric(agent_hostname,'playkey.gs.session.id[{}]'.format(vm), session[vm]['id'])
                 zbx.send([zbx_session_id])
-            elif ' CreateSession: driveName ' in log_message:
-                session[vm]['game'] = log_message.split('/')[-1]
+            elif '<GAME_CODE>' in log_message:
+                session[vm]['game'] = log_message.split('<GAME_CODE>')[-1].split('<')[0]
                 info_session.labels(vm=vm).info({'id':session[vm]['id'],'game':session[vm]['game']})
                 print("VM: {} ID: {} G: {} GF: {} CF: {} L: {}".format(vm, session[vm]['id'], session[vm]['game'], fps_present, fps_customer, latency))
                 zbx_session_game = ZabbixMetric(agent_hostname,'playkey.gs.session.game[{}]'.format(vm), session[vm]['game'])
@@ -127,3 +127,4 @@ while p.poll():
                 zbx_fps_present = ZabbixMetric(agent_hostname,'playkey.gs.fps.present[{}]'.format(vm), fps_present)
                 zbx_latency = ZabbixMetric(agent_hostname,'playkey.gs.latency[{}]'.format(vm), latency)
                 zbx.send([zbx_session_id, zbx_session_game, zbx_fps_customer, zbx_fps_present, zbx_latency])
+
