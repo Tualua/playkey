@@ -22,6 +22,7 @@
 
     wget https://raw.githubusercontent.com/Tualua/playkey/master/scripts/zabbix/gsinfo.py -O /scripts/gsinfo.py
     wget https://raw.githubusercontent.com/Tualua/playkey/master/scripts/zabbix/vminfo.py -O /scripts/vminfo.py
+    wget https://raw.githubusercontent.com/Tualua/playkey/master/scripts/zabbix/dsinfo.py -O /scripts/dsinfo.py
     chmod +x /scripts/*.py
     wget https://raw.githubusercontent.com/Tualua/playkey/master/scripts/zabbix/gsinfo.service -O /lib/systemd/system/gsinfo.service
     systemctl daemon-reload
