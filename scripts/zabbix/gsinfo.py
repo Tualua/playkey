@@ -84,7 +84,7 @@ while p.poll():
                 zbx.send([zbx_session_id])
             elif ' CreateSession: driveName ' in log_message:
                 session[vm]['game'] = log_message.split('/')[-1]
-                info_session.labels(vm=vm).info({'id':session[vm]['id'],'game':session[vm]['id']})
+                info_session.labels(vm=vm).info({'id':session[vm]['id'],'game':session[vm]['game']})
                 print("VM: {} ID: {} G: {} GF: {} CF: {} L: {}".format(vm, session[vm]['id'], session[vm]['game'], fps_present, fps_customer, latency))
                 zbx_session_game = ZabbixMetric(agent_hostname,'playkey.gs.session.game[{}]'.format(vm), session[vm]['game'])
                 zbx.send([zbx_session_game])
@@ -103,7 +103,7 @@ while p.poll():
             elif 'Check session: session_id' in log_message:
                 session[vm]['id'] = log_message.split(' ')[-1]
                 print("VM: {} ID: {} G: {} GF: {} CF: {} L: {}".format(vm, session[vm]['id'], session[vm]['game'], fps_present, fps_customer, latency))
-                info_session.labels(vm=vm).info({'id':session[vm]['id'],'game':session[vm]['id']})
+                info_session.labels(vm=vm).info({'id':session[vm]['id'],'game':session[vm]['game']})
                 zbx_session_id = ZabbixMetric(agent_hostname,'playkey.gs.session.id[{}]'.format(vm), session[vm]['id'])
                 zbx.send([zbx_session_id])
             elif 'Ping (for last 5 sec)' in log_message:
@@ -117,7 +117,7 @@ while p.poll():
                 print("Session finished at {}: {}".format(vm, session[vm]['id']))
                 session[vm] = {'id':'','game':''}
                 fps_present, fps_customer, latency = 0,0,0
-                info_session.labels(vm=vm).info({'id':session[vm]['id'],'game':session[vm]['id']})
+                info_session.labels(vm=vm).info({'id':session[vm]['id'],'game':session[vm]['game']})
                 gauge_fps_customer.labels(vm=vm).set(0)
                 gauge_fps_present.labels(vm=vm).set(0)
                 gauge_latency.labels(vm=vm).set(0)
