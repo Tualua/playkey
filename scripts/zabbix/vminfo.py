@@ -85,6 +85,8 @@ def get_gpu_info(domain):
         result['memutil'] = int(smi.findall('./gpu/utilization/memory_util')[0].text.split(' ')[0])
         #GPU Encoder Utilization
         result['encutil'] = int(smi.findall('./gpu/utilization/encoder_util')[0].text.split(' ')[0])
+        #GPU Encoder FPS
+        result['encfps'] = int(smi.findall('./gpu/encoder_stats/average_fps')[0].text.split(' ')[0])
         #GPU Power
         result['power'] = float(smi.findall('./gpu/power_readings/power_draw')[0].text.split(' ')[0])
         #GPU Fans
@@ -159,6 +161,8 @@ if defined_servers:
                 'temp' : 0,
                 'util' : 0,
                 'memutil' : 0,
+                'encutil' : 0,
+                'encfps' : 0,
                 'power' : 0,
                 'fans' : 0
             }
