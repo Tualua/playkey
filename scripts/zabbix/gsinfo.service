@@ -1,0 +1,15 @@
+[Unit]
+Description=GameServer Prometheus Exporter
+After=syslog.target
+
+[Service]
+Type=simple
+User=gamer
+Group=gamer
+WorkingDirectory=/scripts/
+ExecStart=/scripts/gsinfo.py
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target
