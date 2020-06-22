@@ -59,7 +59,7 @@ start_http_server(8000)
 zbx = ZabbixSender(zabbix_server)
 
 for vm in vms:
-    session[vm] = {'id':'','game':''}
+    session[vm] = {'id':'','game':'','active':True}
     info_session.labels(vm=vm).info({'id':session[vm]['id'],'game':session[vm]['id']})
     gauge_fps_customer.labels(vm=vm).set(0)
     gauge_fps_present.labels(vm=vm).set(0)
@@ -75,6 +75,7 @@ while p.poll():
             vm = entry['SYSLOG_IDENTIFIER'].split('/')[-1]
             if ' CreateSession: session_id' in log_message:
                 session[vm]['id'] = log_message.split(' = ')[-1].split(' ')[-1]
+                session[vm]['active'] = True
                 info_session.labels(vm=vm).info({'id':session[vm]['id'],'game':session[vm]['id']})
                 gauge_fps_customer.labels(vm=vm).set(0)
                 gauge_fps_present.labels(vm=vm).set(0)
@@ -88,25 +89,25 @@ while p.poll():
                 print("VM: {} ID: {} G: {} GF: {} CF: {} L: {}".format(vm, session[vm]['id'], session[vm]['game'], fps_present, fps_customer, latency))
                 zbx_session_game = ZabbixMetric(agent_hostname,'playkey.gs.session.game[{}]'.format(vm), session[vm]['game'])
                 zbx.send([zbx_session_game])
-            elif 'FPS (for last 5 sec)' in log_message:
+            elif 'FPS (for last 5 sec)' in log_message and session[vm]['active']:
                 fps_customer = int(log_message.split(' U: ')[1].split(' ')[0])
                 gauge_fps_customer.labels(vm=vm).set(fps_customer)
                 print("VM: {} ID: {} G: {} GF: {} CF: {} L: {}".format(vm, session[vm]['id'], session[vm]['game'], fps_present, fps_customer, latency))
                 zbx_fps_customer = ZabbixMetric(agent_hostname,'playkey.gs.fps.customer[{}]'.format(vm), fps_customer)
                 zbx.send([zbx_fps_customer])
-            elif 'Present (FPS' in log_message:
+            elif 'Present (FPS' in log_message and session[vm]['active']:
                 fps_present = int(log_message.split('FPS = ')[1].split(')')[0])
                 gauge_fps_present.labels(vm=vm).set(fps_present)
                 print("VM: {} ID: {} G: {} GF: {} CF: {} L: {}".format(vm, session[vm]['id'], session[vm]['game'], fps_present, fps_customer, latency))
                 zbx_fps_present = ZabbixMetric(agent_hostname,'playkey.gs.fps.present[{}]'.format(vm), fps_present)
                 zbx.send([zbx_fps_present])
-            elif 'Check session: session_id' in log_message:
+            elif 'Check session: session_id' in log_message and session[vm]['active']:
                 session[vm]['id'] = log_message.split(' ')[-1]
                 print("VM: {} ID: {} G: {} GF: {} CF: {} L: {}".format(vm, session[vm]['id'], session[vm]['game'], fps_present, fps_customer, latency))
                 info_session.labels(vm=vm).info({'id':session[vm]['id'],'game':session[vm]['game']})
                 zbx_session_id = ZabbixMetric(agent_hostname,'playkey.gs.session.id[{}]'.format(vm), session[vm]['id'])
                 zbx.send([zbx_session_id])
-            elif 'Ping (for last 5 sec)' in log_message:
+            elif 'Ping (for last 5 sec)' in log_message and session[vm]['active']:
                 latency = int(log_message.split(': ')[-1].split(' ')[0])
                 gauge_latency.labels(vm=vm).set(latency)
                 print("VM: {} ID: {} G: {} GF: {} CF: {} L: {}".format(vm, session[vm]['id'], session[vm]['game'], fps_present, fps_customer, latency))
@@ -116,6 +117,7 @@ while p.poll():
                 print("VM: {} ID: {} G: {} GF: {} CF: {} L: {}".format(vm, session[vm]['id'], session[vm]['game'], fps_present, fps_customer, latency))
                 print("Session finished at {}: {}".format(vm, session[vm]['id']))
                 session[vm] = {'id':'','game':''}
+                session[vm]['active'] = False
                 fps_present, fps_customer, latency = 0,0,0
                 info_session.labels(vm=vm).info({'id':session[vm]['id'],'game':session[vm]['game']})
                 gauge_fps_customer.labels(vm=vm).set(0)
