@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# Script to analyze FPS data from PlayKey GameServer
+# Script to export sessions data from PlayKey GameServer
 # Requires pygsheets, numpy and pandas installed
 # Default Google API key location is /home/games/api/playkey.json
 # Default log folder is /var/log/gsstats
