@@ -25,6 +25,8 @@
     wget https://raw.githubusercontent.com/Tualua/playkey/master/scripts/zabbix/vminfo.py -O /scripts/vminfo.py
     wget https://raw.githubusercontent.com/Tualua/playkey/master/scripts/zabbix/dsinfo.py -O /scripts/dsinfo.py
     chmod +x /scripts/*.py
+    touch /var/log/vminfo.err.log
+    chmod 777 /var/log/vminfo.err.log
     wget https://raw.githubusercontent.com/Tualua/playkey/master/scripts/zabbix/gsinfo.service -O /lib/systemd/system/gsinfo.service
     systemctl daemon-reload
     systemctl enable gsinfo --now
