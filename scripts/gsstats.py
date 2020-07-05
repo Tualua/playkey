@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# Script to export sessions data from PlayKey GameServer
+# Script to analyze FPS data from PlayKey GameServer
 # Requires pygsheets, numpy and pandas installed
 # Default Google API key location is /home/games/api/playkey.json
 # Default log folder is /var/log/gsstats
@@ -28,7 +28,7 @@ def exec_shell_command(command):
     return stdout.split('\n')
 
 #Read GameServer log for <vm> for <start>-<end> timeframe. 
-def get_log(domainName, start, end, reverse=False, debug=False):
+def get_log(domainName, start, end, reverse=False, debug=False, logdir=''):
     jctl_options = ["-o short-iso"]
     jctl_options.append("--no-pager -tgameserver/{}".format(domainName))
     
@@ -38,6 +38,8 @@ def get_log(domainName, start, end, reverse=False, debug=False):
         jctl_options.append("--until=\"{}\"".format(end))
     if reverse:
         jctl_options.append("-r")
+    if logdir:
+        jctl_options.append("--directory {}".format(logdir))
     
     jctl = "journalctl {}".format(" ".join(jctl_options))
     if debug:
@@ -90,7 +92,7 @@ def get_fps_stats(data):
 def get_latency_stats(data):
     if len(data)>0:
         ping = np.array(data)
-        p = np.percentile(ping, 75)
+        p = np.percentile(ping, 25)
         return int(p)
     else:
         return 9999
@@ -123,7 +125,7 @@ def get_sessions(data):
             #FPS sent to customer
             elif 'FPS (for last 5 sec)' in value:
                 result[session_id]["FPS Customer"].extend([int(value.split(' U: ')[1].split(' ')[0])])
-            #FPS sent to customer
+            #Game FPS
             elif 'Present (FPS' in value:
                 result[session_id]["FPS Game"].extend([int(value.split('FPS = ')[1].split(')')[0])])
             #Latency
@@ -149,6 +151,7 @@ def main(args):
     if args.all:
         start_time = 0
         end_time = 0
+        td = 0
         csv_export = "/var/log/gsstats/pk_sessions-all-{}.csv".format(now_time.strftime('%Y-%m-%d-%H-%M-%S'))
         print("Analyze all sessions")
     else:
@@ -158,21 +161,25 @@ def main(args):
         csv_export = "/var/log/gsstats/pk_sessions-{}.csv".format(now_time.strftime('%Y-%m-%d-%H-%M-%S'))
         print("Analyze session data from {} to {}".format(start_time, end_time))
 
+    logdir=''
+    if args.logdir:
+        logdir = args.logdir
+
     sessions={}
     vms = get_servers()
 
     for vm in vms:
-        log = get_log(vm, start_time, end_time, debug=args.debug)
+        log = get_log(vm, start_time, end_time, debug=args.debug, logdir=logdir)
         s = get_sessions(log)
         #Check for yesterday session
         if "yesterday" in s.keys():
             #Find that session start time
-            y_log = get_log(vm, (now_time-timedelta(days=td+1)).strftime('%Y-%m-%d 00:00:00'), (now_time-timedelta(days=td+1)).strftime('%Y-%m-%d 23:59:59'), reverse=True, debug=args.debug)
+            y_log = get_log(vm, (now_time-timedelta(days=td+1)).strftime('%Y-%m-%d 00:00:00'), (now_time-timedelta(days=td+1)).strftime('%Y-%m-%d 23:59:59'), reverse=True, debug=args.debug, logdir=logdir)
             for value in y_log:
                 if ' CreateSession: session_id' in value:
                     y_session_start_time = value.split(' ')[0][:-5].replace('T',' ')
                     break
-            y_log = get_log(vm, y_session_start_time, (now_time-timedelta(days=td+1)).strftime('%Y-%m-%d 23:59:59'))
+            y_log = get_log(vm, y_session_start_time, (now_time-timedelta(days=td+1)).strftime('%Y-%m-%d 23:59:59'), logdir=logdir)
             #Get yesterday session data
             y_s = get_sessions(y_log)
             #Add that session to session dict
@@ -276,5 +283,6 @@ if __name__ == "__main__":
     parser.add_argument('--offline', help='Do not publish data to Google Sheets', action='store_true', default=False)
     parser.add_argument('--debug', help='Print additional info during run', action='store_true', default=False)
     parser.add_argument('--key', type=str, action='store', dest="key_path", help='Path to Google API key', default="/home/gamer/api/playkey.json")
+    parser.add_argument('--logdir', type=str, action='store', dest="logdir", help='Path to journal log dir')
     args = parser.parse_args()
     main(args)
