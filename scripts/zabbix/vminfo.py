@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import libvirt, libvirt_qemu
-import json, time, sys, subprocess
+import json, time, sys, subprocess, argparse
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 
@@ -50,7 +50,11 @@ def guest_exec_get_response(domain, pid, timeout=6, flags=0):
         while (not response_json["return"]["exited"]):
             time.sleep(0.12)
             response_json = json.loads(libvirt_qemu.qemuAgentCommand(domain, command, timeout, flags))
-        result = str(response_json["return"]["out-data"]).decode('base64','strict')
+        try:
+            result = str(response_json["return"]["out-data"]).decode('base64','strict')
+        except KeyError as e:
+            result = ''
+            print >> sys.stderr, "VM: {}, CPU: {}".format(domain.name(),response_json)
         return result
 
 
@@ -131,61 +135,61 @@ def get_cpu_info(domain):
         result['cores'] = int(cpu['NumberOfEnabledCore'])
         result['threads'] = int(cpu['NumberOfLogicalProcessors'])
         result['threadcount'] = int(cpu['ThreadCount'])
-        result['util'] = int(cpu['LoadPercentage'])
+        if cpu['LoadPercentage']:
+            result['util'] = int(cpu['LoadPercentage'])
+        else:
+            result['util'] = 0
     return result
 
-vmsinfo = {}
-vmsinfo["values"] = {}
-vmsinfo["lld"] = []
 
+def main(args):
+    vminfo = {}
+    vminfo["values"] = {}
+    vminfo["values"][args.vm] = {}
+    conn = libvirt.open('qemu:///system')
+    if conn == None:
+        print json.dumps(vmsinfo, sort_keys=True, indent=4)
+        sys.exit(1)
 
-conn = libvirt.open('qemu:///system')
-if conn == None:
-    print json.dumps(vmsinfo, sort_keys=True, indent=4)
-    sys.exit(1)
+    try:
+        dom = conn.lookupByName(args.vm)
+    except libvirt.libvirtError:
+        vmsinfo["values"][args.vm]['status'] = "down"
+        vmsinfo["values"][args.vm]['gpu'] = {
+            'name' : '',
+            'memory' : '',
+            'pciegen' : '',
+            'temp' : '',
+            'util' : '',
+            'memutil' : '',
+            'encutil' : '',
+            'encfps' : '',
+            'power' : '',
+            'fans' : ''
+        }
+        vmsinfo["values"][args.vm]['memory'] = {
+            'total' : '',
+            'free' : '',
+            'util' :'',
+        }
+        vmsinfo["values"][args.vm]['cpu'] = {
+            'cores' : '',
+            'threads' : '',
+            'threadcount' : '',
+            'util' : ''
+        }
+    else:
+        vminfo["values"][args.vm]['status'] = "up"
+        vminfo["values"][args.vm]['gpu'] = get_gpu_info(dom)
+        vminfo["values"][args.vm]['memory'] = get_mem_info(dom)
+        vminfo["values"][args.vm]['cpu'] = get_cpu_info(dom)
 
-defined_servers = get_servers()
-active_servers = []
-if defined_servers:
-    for server in defined_servers:
-        vmsinfo["lld"].append({'{#VMNAME}' : server})
-        vmsinfo["values"].update({server:{}})
-        try:
-            dom = conn.lookupByName(server)
-        except libvirt.libvirtError:
-            vmsinfo["values"][server]['status'] = "down"
-            vmsinfo["values"][server]['gpu'] = {
-                'name' : '',
-                'memory' : 0,
-                'pciegen' : 0,
-                'temp' : 0,
-                'util' : 0,
-                'memutil' : 0,
-                'encutil' : 0,
-                'encfps' : 0,
-                'power' : 0,
-                'fans' : 0
-            }
-            vmsinfo["values"][server]['memory'] = {
-                'total' : 0,
-                'free' : 0,
-                'util' :0,
-            }
-            vmsinfo["values"][server]['cpu'] = {
-                'cores' : 0,
-                'threads' : 0,
-                'threadcount' : 0,
-                'util' : 0
-            }
-        else:
-            vmsinfo["values"][server]['status'] = "up"
-            active_servers.append(dom)
-if active_servers:
-    for server in active_servers:
-        vmsinfo["values"][server.name()]['gpu'] = get_gpu_info(server)
-        vmsinfo["values"][server.name()]['memory'] = get_mem_info(server)
-        vmsinfo["values"][server.name()]['cpu'] = get_cpu_info(server)
+    print json.dumps(vminfo, sort_keys=True, indent=4)
 
-print json.dumps(vmsinfo, sort_keys=True, indent=4)
+    conn.close()
 
-conn.close()
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='PlayKey VM data retriever')
+    parser.add_argument('vm', type=str, action='store', help='VM Name')
+    args = parser.parse_args()
+    main(args)
