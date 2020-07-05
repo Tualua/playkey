@@ -34,6 +34,7 @@ def get_servers(path="/usr/local/etc/gameserver/conf.xml"):
     return vms
 
 zabbix_server, agent_hostname = get_zabbix_conf()
+exclude_processes = ['EpicGamesLauncher.exe']
 
 vms = get_servers()
 session = {}
@@ -41,8 +42,6 @@ j = journal.Reader()
 j.log_level(journal.LOG_INFO)
 j.add_match(
     _SYSTEMD_UNIT=u'gameserver.service')
-j.add_match(
-    _SYSTEMD_UNIT=u'voloder.service')
 
 j.seek_tail()
 j.get_previous()
@@ -82,39 +81,63 @@ while p.poll():
                 gauge_latency.labels(vm=vm).set(0)
                 print("Session started at {}: {}".format(vm, session[vm]['id']))
                 zbx_session_id = ZabbixMetric(agent_hostname,'playkey.gs.session.id[{}]'.format(vm), session[vm]['id'])
-                zbx.send([zbx_session_id])
+                try:
+                    zbx.send([zbx_session_id])
+                except:
+                    print('Failed to send metrics to Zabbix Server!')
+                    pass
             elif '<GAME_CODE>' in log_message:
                 session[vm]['game'] = log_message.split('<GAME_CODE>')[-1].split('<')[0]
                 info_session.labels(vm=vm).info({'id':session[vm]['id'],'game':session[vm]['game']})
                 print("VM: {} ID: {} G: {} GF: {} CF: {} L: {}".format(vm, session[vm]['id'], session[vm]['game'], fps_present, fps_customer, latency))
                 zbx_session_game = ZabbixMetric(agent_hostname,'playkey.gs.session.game[{}]'.format(vm), session[vm]['game'])
-                zbx.send([zbx_session_game])
+                try:
+                    zbx.send([zbx_session_game])
+                except:
+                    print('Failed to send metrics to Zabbix Server!')
+                    pass
             elif 'FPS (for last 5 sec)' in log_message and session[vm]['active']:
                 fps_customer = int(log_message.split(' U: ')[1].split(' ')[0])
                 gauge_fps_customer.labels(vm=vm).set(fps_customer)
                 print("VM: {} ID: {} G: {} GF: {} CF: {} L: {}".format(vm, session[vm]['id'], session[vm]['game'], fps_present, fps_customer, latency))
                 zbx_fps_customer = ZabbixMetric(agent_hostname,'playkey.gs.fps.customer[{}]'.format(vm), fps_customer)
-                zbx.send([zbx_fps_customer])
+                try:
+                    zbx.send([zbx_fps_customer])
+                except:
+                    print('Failed to send metrics to Zabbix Server!')
+                    pass
             elif 'Present (FPS' in log_message and session[vm]['active']:
                 process = log_message.split(': ')[1]
-                print('Process: {}'.format(process))
-                fps_present = int(log_message.split('FPS = ')[1].split(')')[0])
-                gauge_fps_present.labels(vm=vm).set(fps_present)
-                print("VM: {} ID: {} G: {} GF: {} CF: {} L: {}".format(vm, session[vm]['id'], session[vm]['game'], fps_present, fps_customer, latency))
-                zbx_fps_present = ZabbixMetric(agent_hostname,'playkey.gs.fps.present[{}]'.format(vm), fps_present)
-                zbx.send([zbx_fps_present])
+                if not process in exclude_processes:
+                    fps_present = int(log_message.split('FPS = ')[1].split(')')[0])
+                    gauge_fps_present.labels(vm=vm).set(fps_present)
+                    print("VM: {} ID: {} G: {} GF: {} CF: {} L: {}".format(vm, session[vm]['id'], session[vm]['game'], fps_present, fps_customer, latency))
+                    zbx_fps_present = ZabbixMetric(agent_hostname,'playkey.gs.fps.present[{}]'.format(vm), fps_present)
+                    try:
+                        zbx.send([zbx_fps_present])
+                    except:
+                        print('Failed to send metrics to Zabbix Server!')
+                        pass
             elif 'Check session: session_id' in log_message and session[vm]['active']:
                 session[vm]['id'] = log_message.split(' ')[-1]
                 print("VM: {} ID: {} G: {} GF: {} CF: {} L: {}".format(vm, session[vm]['id'], session[vm]['game'], fps_present, fps_customer, latency))
                 info_session.labels(vm=vm).info({'id':session[vm]['id'],'game':session[vm]['game']})
                 zbx_session_id = ZabbixMetric(agent_hostname,'playkey.gs.session.id[{}]'.format(vm), session[vm]['id'])
-                zbx.send([zbx_session_id])
+                try:
+                    zbx.send([zbx_session_id])
+                except:
+                    print('Failed to send metrics to Zabbix Server!')
+                    pass
             elif 'Ping (for last 5 sec)' in log_message and session[vm]['active']:
                 latency = int(log_message.split(': ')[-1].split(' ')[0])
                 gauge_latency.labels(vm=vm).set(latency)
                 print("VM: {} ID: {} G: {} GF: {} CF: {} L: {}".format(vm, session[vm]['id'], session[vm]['game'], fps_present, fps_customer, latency))
                 zbx_latency = ZabbixMetric(agent_hostname,'playkey.gs.latency[{}]'.format(vm), latency)
-                zbx.send([zbx_latency])
+                try:
+                    zbx.send([zbx_latency])
+                except:
+                    print('Failed to send metrics to Zabbix Server!')
+                    pass
             elif 'OnCloseClient' in log_message:
                 print("VM: {} ID: {} G: {} GF: {} CF: {} L: {}".format(vm, session[vm]['id'], session[vm]['game'], fps_present, fps_customer, latency))
                 print("Session finished at {}: {}".format(vm, session[vm]['id']))
@@ -130,4 +153,9 @@ while p.poll():
                 zbx_fps_customer = ZabbixMetric(agent_hostname,'playkey.gs.fps.customer[{}]'.format(vm), fps_customer)
                 zbx_fps_present = ZabbixMetric(agent_hostname,'playkey.gs.fps.present[{}]'.format(vm), fps_present)
                 zbx_latency = ZabbixMetric(agent_hostname,'playkey.gs.latency[{}]'.format(vm), latency)
-                zbx.send([zbx_session_id, zbx_session_game, zbx_fps_customer, zbx_fps_present, zbx_latency])
+                try:
+                    zbx.send([zbx_session_id, zbx_session_game, zbx_fps_customer, zbx_fps_present, zbx_latency])
+                except:
+                    print('Failed to send metrics to Zabbix Server!')
+                    pass
+
