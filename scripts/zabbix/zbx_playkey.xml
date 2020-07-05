@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>5.0</version>
-    <date>2020-06-19T10:06:38Z</date>
+    <date>2020-07-05T07:34:14Z</date>
     <groups>
         <group>
             <name>PlayKey Hosts</name>
@@ -14,6 +14,9 @@
             <description>PlayKey Host Template</description>
             <templates>
                 <template>
+                    <name>PlayKey Template Module Linux network interfaces by Zabbix agent</name>
+                </template>
+                <template>
                     <name>Template Module Linux CPU by Zabbix agent</name>
                 </template>
                 <template>
@@ -24,9 +27,6 @@
                 </template>
                 <template>
                     <name>Template Module Linux memory by Zabbix agent</name>
-                </template>
-                <template>
-                    <name>Template Module Linux network interfaces by Zabbix agent</name>
                 </template>
                 <template>
                     <name>Template Module Zabbix agent</name>
@@ -50,6 +50,8 @@
                     <name>CPU Max Temperature</name>
                     <key>cpu.maxtemperature</key>
                     <delay>30s</delay>
+                    <history>30d</history>
+                    <trends>0</trends>
                     <value_type>FLOAT</value_type>
                     <units>°C</units>
                     <applications>
@@ -77,6 +79,7 @@
                     <name>PlayKey Datasets</name>
                     <key>playkey.datasets</key>
                     <delay>10m</delay>
+                    <history>10d</history>
                     <trends>0</trends>
                     <value_type>TEXT</value_type>
                     <applications>
@@ -90,6 +93,8 @@
                     <type>DEPENDENT</type>
                     <key>playkey.datasets.avail</key>
                     <delay>0</delay>
+                    <history>30d</history>
+                    <trends>0</trends>
                     <value_type>FLOAT</value_type>
                     <units>GB</units>
                     <applications>
@@ -303,7 +308,7 @@
                                 </step>
                             </preprocessing>
                             <master_item>
-                                <key>playkey.vms</key>
+                                <key>playkey.vminfo[{#VMNAME}]</key>
                             </master_item>
                         </item_prototype>
                         <item_prototype>
@@ -323,7 +328,7 @@
                                 </step>
                             </preprocessing>
                             <master_item>
-                                <key>playkey.vms</key>
+                                <key>playkey.vminfo[{#VMNAME}]</key>
                             </master_item>
                         </item_prototype>
                         <item_prototype>
@@ -344,7 +349,7 @@
                                 </step>
                             </preprocessing>
                             <master_item>
-                                <key>playkey.vms</key>
+                                <key>playkey.vminfo[{#VMNAME}]</key>
                             </master_item>
                         </item_prototype>
                         <item_prototype>
@@ -366,7 +371,7 @@
                                 </step>
                             </preprocessing>
                             <master_item>
-                                <key>playkey.vms</key>
+                                <key>playkey.vminfo[{#VMNAME}]</key>
                             </master_item>
                         </item_prototype>
                         <item_prototype>
@@ -387,7 +392,7 @@
                                 </step>
                             </preprocessing>
                             <master_item>
-                                <key>playkey.vms</key>
+                                <key>playkey.vminfo[{#VMNAME}]</key>
                             </master_item>
                         </item_prototype>
                         <item_prototype>
@@ -409,7 +414,7 @@
                                 </step>
                             </preprocessing>
                             <master_item>
-                                <key>playkey.vms</key>
+                                <key>playkey.vminfo[{#VMNAME}]</key>
                             </master_item>
                         </item_prototype>
                         <item_prototype>
@@ -432,7 +437,7 @@
                                 </step>
                             </preprocessing>
                             <master_item>
-                                <key>playkey.vms</key>
+                                <key>playkey.vminfo[{#VMNAME}]</key>
                             </master_item>
                         </item_prototype>
                         <item_prototype>
@@ -454,7 +459,7 @@
                                 </step>
                             </preprocessing>
                             <master_item>
-                                <key>playkey.vms</key>
+                                <key>playkey.vminfo[{#VMNAME}]</key>
                             </master_item>
                         </item_prototype>
                         <item_prototype>
@@ -481,7 +486,7 @@
                                 </step>
                             </preprocessing>
                             <master_item>
-                                <key>playkey.vms</key>
+                                <key>playkey.vminfo[{#VMNAME}]</key>
                             </master_item>
                         </item_prototype>
                         <item_prototype>
@@ -508,7 +513,7 @@
                                 </step>
                             </preprocessing>
                             <master_item>
-                                <key>playkey.vms</key>
+                                <key>playkey.vminfo[{#VMNAME}]</key>
                             </master_item>
                         </item_prototype>
                         <item_prototype>
@@ -530,7 +535,7 @@
                                 </step>
                             </preprocessing>
                             <master_item>
-                                <key>playkey.vms</key>
+                                <key>playkey.vminfo[{#VMNAME}]</key>
                             </master_item>
                         </item_prototype>
                         <item_prototype>
@@ -552,7 +557,7 @@
                                 </step>
                             </preprocessing>
                             <master_item>
-                                <key>playkey.vms</key>
+                                <key>playkey.vminfo[{#VMNAME}]</key>
                             </master_item>
                         </item_prototype>
                         <item_prototype>
@@ -574,7 +579,7 @@
                                 </step>
                             </preprocessing>
                             <master_item>
-                                <key>playkey.vms</key>
+                                <key>playkey.vminfo[{#VMNAME}]</key>
                             </master_item>
                         </item_prototype>
                         <item_prototype>
@@ -596,7 +601,7 @@
                                 </step>
                             </preprocessing>
                             <master_item>
-                                <key>playkey.vms</key>
+                                <key>playkey.vminfo[{#VMNAME}]</key>
                             </master_item>
                         </item_prototype>
                         <item_prototype>
@@ -618,8 +623,20 @@
                                 </step>
                             </preprocessing>
                             <master_item>
-                                <key>playkey.vms</key>
+                                <key>playkey.vminfo[{#VMNAME}]</key>
                             </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#VMNAME} Data</name>
+                            <key>playkey.vminfo[{#VMNAME}]</key>
+                            <history>30d</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>{#VMNAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
                         </item_prototype>
                     </item_prototypes>
                     <graph_prototypes>
@@ -631,7 +648,6 @@
                             <graph_items>
                                 <graph_item>
                                     <color>1A7C11</color>
-                                    <calc_fnc>ALL</calc_fnc>
                                     <item>
                                         <host>Template PlayKey</host>
                                         <key>playkey.vm.cpu_util[{#VMNAME}]</key>
@@ -640,7 +656,6 @@
                                 <graph_item>
                                     <sortorder>1</sortorder>
                                     <color>F63100</color>
-                                    <calc_fnc>ALL</calc_fnc>
                                     <item>
                                         <host>Template PlayKey</host>
                                         <key>playkey.vm.gpu_util[{#VMNAME}]</key>
@@ -649,7 +664,6 @@
                                 <graph_item>
                                     <sortorder>2</sortorder>
                                     <color>2774A4</color>
-                                    <calc_fnc>ALL</calc_fnc>
                                     <item>
                                         <host>Template PlayKey</host>
                                         <key>playkey.vm.gpu_encutil[{#VMNAME}]</key>
@@ -658,7 +672,6 @@
                                 <graph_item>
                                     <sortorder>3</sortorder>
                                     <color>A54F10</color>
-                                    <calc_fnc>ALL</calc_fnc>
                                     <item>
                                         <host>Template PlayKey</host>
                                         <key>playkey.vm.gpu_mem_util[{#VMNAME}]</key>
@@ -667,7 +680,6 @@
                                 <graph_item>
                                     <sortorder>4</sortorder>
                                     <color>FC6EA3</color>
-                                    <calc_fnc>ALL</calc_fnc>
                                     <item>
                                         <host>Template PlayKey</host>
                                         <key>playkey.vm.mem_util[{#VMNAME}]</key>
@@ -677,7 +689,6 @@
                                     <sortorder>5</sortorder>
                                     <color>6C59DC</color>
                                     <yaxisside>RIGHT</yaxisside>
-                                    <calc_fnc>ALL</calc_fnc>
                                     <item>
                                         <host>Template PlayKey</host>
                                         <key>playkey.gs.fps.present[{#VMNAME}]</key>
@@ -685,8 +696,8 @@
                                 </graph_item>
                                 <graph_item>
                                     <sortorder>6</sortorder>
-                                    <color>611F27</color>
-                                    <calc_fnc>ALL</calc_fnc>
+                                    <color>E64A19</color>
+                                    <yaxisside>RIGHT</yaxisside>
                                     <item>
                                         <host>Template PlayKey</host>
                                         <key>playkey.gs.fps.customer[{#VMNAME}]</key>
@@ -694,8 +705,8 @@
                                 </graph_item>
                                 <graph_item>
                                     <sortorder>7</sortorder>
-                                    <color>F230E0</color>
-                                    <calc_fnc>ALL</calc_fnc>
+                                    <color>0040FF</color>
+                                    <yaxisside>RIGHT</yaxisside>
                                     <item>
                                         <host>Template PlayKey</host>
                                         <key>playkey.vm.gpu_encfps[{#VMNAME}]</key>
