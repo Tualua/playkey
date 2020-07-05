@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>5.0</version>
-    <date>2020-07-05T07:34:14Z</date>
+    <date>2020-07-05T09:12:40Z</date>
     <groups>
         <group>
             <name>PlayKey Hosts</name>
@@ -730,6 +730,13 @@
                     </preprocessing>
                 </discovery_rule>
             </discovery_rules>
+            <macros>
+                <macro>
+                    <macro>{$MEMORY.UTIL.MAX}</macro>
+                    <value>99</value>
+                    <description>This macro is used as a threshold in memory utilization trigger.</description>
+                </macro>
+            </macros>
             <screens>
                 <screen>
                     <name>Network interfaces</name>
