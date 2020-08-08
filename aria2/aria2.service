@@ -1,0 +1,17 @@
+[Unit]
+Description=aria2c download manager
+Requires=network.target
+After=dhcpcd.service
+
+[Service]
+Type=forking
+User=nginx
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/aria2c --conf-path=/etc/aria2/aria2.conf
+ExecReload=/usr/bin/kill -HUP $MAINPID
+ExecStop=/usr/bin/kill -s STOP $MAINPID
+RestartSec=1min
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
