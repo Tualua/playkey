@@ -21,12 +21,13 @@
     
     semanage fcontext -a -t httpd_sys_rw_content_t "/data/nginx/downloads(/.*)?"
     chcon -R -t httpd_sys_rw_content_t /data/nginx/downloads
+    setsebool -P httpd_can_network_connect 1
     
     systemctl daemon-reload
     systemctl enable aria2 --now
     
     nginx -t
-    systemctl reload nginx
+    systemctl restart nginx
     
   
     
