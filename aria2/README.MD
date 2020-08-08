@@ -12,8 +12,10 @@
     chown nginx:nginx /var/aria2
     chown nginx:nginx /var/log/aria2
     
-     semanage fcontext -a -t httpd_sys_rw_content_t "/data/nginx/downloads(/.*)?"
-     chcon -R -t httpd_sys_rw_content_t /data/nginx/downloads
+    semanage fcontext -a -t httpd_sys_rw_content_t "/data/nginx/downloads(/.*)?"
+    chcon -R -t httpd_sys_rw_content_t /data/nginx/downloads
+    
+  
     
     
     
