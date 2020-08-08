@@ -1,4 +1,6 @@
 
+    yum -y install nginx-module-njs
+    
     mkdir /etc/aria2
     mkdir /var/aria2
     mkdir /var/log/aria2
