@@ -9,6 +9,7 @@
     wget https://raw.githubusercontent.com/Tualua/playkey/master/aria2/aria2-hook-move.sh -O /usr/local/bin/aria2-hook-move.sh
     wget https://raw.githubusercontent.com/Tualua/playkey/master/aria2/aria2.js -O /etc/nginx/js/aria2.js
     wget https://raw.githubusercontent.com/Tualua/playkey/master/aria2/pk.conf -O /etc/nginx/conf.d/pk.conf
+    wget https://raw.githubusercontent.com/Tualua/playkey/master/aria2/aria2.service -O /lib/systemd/system/aria2.service
     
     chown nginx:nginx /usr/local/bin/aria2-hook-move.sh
     chmod +x /usr/local/bin/aria2-hook-move.sh
@@ -18,6 +19,9 @@
     
     semanage fcontext -a -t httpd_sys_rw_content_t "/data/nginx/downloads(/.*)?"
     chcon -R -t httpd_sys_rw_content_t /data/nginx/downloads
+    
+    systemctl daemon-reload
+    systemctl enable aria2 --now
     
     nginx -t
     systemctl reload nginx
