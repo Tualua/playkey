@@ -1,0 +1,15 @@
+[Unit]
+Description=GameServer Idle Mining Service
+After=syslog.target
+
+[Service]
+Type=simple
+User=root
+Group=wheel
+WorkingDirectory=/scripts/pkmsvc/
+ExecStart=/scripts/pkmsvc/pkmsvc.py
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target
