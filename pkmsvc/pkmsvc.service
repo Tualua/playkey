@@ -8,6 +8,7 @@ User=root
 Group=wheel
 WorkingDirectory=/scripts/pkmsvc/
 ExecStart=/scripts/pkmsvc/pkmsvc.py
+Restart=always
 StandardOutput=syslog
 StandardError=syslog
 
