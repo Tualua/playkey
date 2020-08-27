@@ -106,7 +106,10 @@ def prepare_disk(domain):
     for line in result:
         print('{}: {}'.format(vm_name, line))
     guest_exec_get_response(domain, pid)
-    detachToolsDisk(domain)
+    if detachToolsDisk(domain):
+        print('{}: Detached temporary disk'.format(vm_name))
+    else:
+        print('{}: Error detaching temporary disk'.format(vm_name))
 
 def getToolsDiskXML(domain):
     xml = ET.fromstring(domain.XMLDesc(0))
