@@ -25,37 +25,37 @@ function aria2_download(r) {
         .then(res_downloads => {
             var status_downloads = {};
 
-            function convtodict(value) {
+            function get_downloads_status(value) {
                 var fname1 = value.files[0].uris[0].uri.split('/');
                 var fname2 = fname1[fname1.length - 1];
                 status_downloads[fname2] = [value.gid, value.status];
             }
 
-            JSON.parse(res_downloads.responseBody).result.forEach(convtodict);
-            var checkDownloads = {}
-            checkDownloads['name'] = file_name
+            JSON.parse(res_downloads.responseBody).result.forEach(get_downloads_status);
+            var file_download_status = {}
+            file_download_status.name = file_name
             if (file_name in status_downloads) {
-                r.error(`File ${file_name} already downloading!`);
-                checkDownloads["gid"] = status_downloads[file_name][0];
-                checkDownloads["downloading"] = true;
+                r.error(`File ${file_name} is already downloading!`);
+                file_download_status.gid = status_downloads[file_name][0];
+                file_download_status.downloading = true;
                 if (status_downloads[file_name][1] == "error") {
-                    r.error(`Error in download ${checkDownloads["gid"]}! file_name: ${file_name}`);
-                    checkDownloads["error"] = true;
+                    r.error(`Error in download ${file_download_status.gid}! file_name: ${file_name}`);
+                    file_download_status.error = true;
                 } else {
-                    checkDownloads["error"] = false;
+                    file_download_status.error = false;
                 }
             } else {
-                checkDownloads["downloading"] = false;
-                checkDownloads["error"] = false;
+                file_download_status.downloading = false;
+                file_download_status.error = false;
             }
-            return checkDownloads;
+            return file_download_status;
     }, err => {r.error(err.message);})
-        .then(file_status => {
-            if (file_status["downloading"]) {
-                if (file_status["error"]) {
-                    r.error(`Removing download ${file_status["gid"]} from aria2!`);
-                    remove_args = make_aria2_args(token, "forceRemove", make_id(16), [file_status["gid"]]);
-                    r.subrequest("/aria2", remove_args).then(res => { r.return(404); });
+        .then(file_download_status => {
+            if (file_download_status.downloading) {
+                if (file_download_status.error) {
+                    r.error(`Removing download ${file_download_status.gid} from aria2!`);
+                    args_force_remove = make_aria2_args(token, "forceRemove", make_id(16), [file_download_status.gid]);
+                    r.subrequest("/aria2", args_force_remove).then(res => { r.return(404); });
                 } else {
                     r.return(404);
                 }
