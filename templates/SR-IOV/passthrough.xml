@@ -1,0 +1,7 @@
+<network>
+   <name>passthrough</name>
+   <forward mode='hostdev' managed='yes'>
+     <!-- Change to SR-IOV enabled interface name -->
+     <pf dev='enp3s0d1'/>
+   </forward>
+ </network>
