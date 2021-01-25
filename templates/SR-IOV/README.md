@@ -1,3 +1,3 @@
 WARNING!
 
-When using SR-IOV with GameServer - swith to **static IPs** for VMs!
+When using SR-IOV with GameServer - switch to **static IPs** for VMs!
