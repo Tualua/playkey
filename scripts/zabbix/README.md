@@ -14,7 +14,7 @@
 
     yum -y install python2-pip
     yum -y install systemd-python
-    pip install --upgrade pip
+    pip install --upgrade pip==20.3.3
     pip install py-zabbix
     pip install prometheus_client
 
