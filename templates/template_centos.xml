@@ -1,0 +1,184 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<domain type="kvm">
+  <name>$(NAME)</name>
+  <memory unit="G">8</memory>
+  <currentMemory unit="G">8</currentMemory>
+  <memoryBacking>
+    <hugepages>
+      <page size="1048576" unit="KiB" nodeset="0"/>
+    </hugepages>
+    <nosharepages/>
+    <locked/>
+    <access mode="private"/>
+  </memoryBacking>
+  <vcpu placement="static">6</vcpu>
+  <iothreads>4</iothreads>
+  <resource>
+    <partition>/machine</partition>
+  </resource>
+  <os>
+    <type arch="x86_64" machine="q35">hvm</type>
+    <loader readonly="yes" type="rom">/usr/share/OVMF/OVMF_CODE-pure-efi.fd</loader>
+    <boot dev="hd"/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <hyperv>
+      <relaxed state="on"/>
+      <vapic state="on"/>
+      <spinlocks state="on" retries="8191"/>
+      <vendor_id state="on" value="Playkey"/>
+    </hyperv>
+    <kvm>
+      <hidden state="on"/>
+    </kvm>
+    <smm state="on"/>
+  </features>
+  <cpu mode="host-passthrough" check="none">
+    <topology sockets="1" cores="6" threads="2"/>
+    <cache mode="passthrough"/>
+    <numa>
+      <cell id="0" cpus="0-5" memory="8" unit="GiB" memAccess="private"/>
+    </numa>
+  </cpu>
+  <memoryBacking>
+    <access mode="private"/>
+    <nosharepages/>
+    <locked/>
+    <!--   <hugepages>
+      <page size="1" unit="G" nodeset="0"/>
+    </hugepages> -->
+  </memoryBacking>
+  <clock offset="localtime">
+    <timer name="rtc" tickpolicy="catchup"/>
+    <timer name="pit" tickpolicy="delay"/>
+    <timer name="hpet" present="yes"/>
+    <timer name="hypervclock" present="yes"/>
+  </clock>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <pm>
+    <suspend-to-mem enabled="no"/>
+    <suspend-to-disk enabled="no"/>
+  </pm>
+  <devices>
+    <emulator>/usr/libexec/qemu-kvm</emulator>
+    <disk type="block" device="disk">
+      <driver name="qemu" type="raw" cache="none" iothread="1" io="threads"/>
+      <source dev="$(SYSTEM_DISK)"/>
+      <target dev="hda" bus="virtio"/>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x08" function="0x0"/>
+    </disk>
+    <channel type="unix">
+      <target type="virtio" name="org.qemu.guest_agent.0"/>
+      <address type="virtio-serial" controller="0" bus="0" port="1"/>
+    </channel>
+    <controller type="usb" index="0" model="ich9-ehci1">
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x1d" function="0x7"/>
+    </controller>
+    <controller type="usb" index="0" model="ich9-uhci1">
+      <master startport="0"/>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x1d" function="0x0" multifunction="on"/>
+    </controller>
+    <controller type="usb" index="0" model="ich9-uhci2">
+      <master startport="2"/>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x1d" function="0x1"/>
+    </controller>
+    <controller type="usb" index="0" model="ich9-uhci3">
+      <master startport="4"/>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x1d" function="0x2"/>
+    </controller>
+    <controller type="sata" index="0">
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x1f" function="0x2"/>
+    </controller>
+    <controller type="pci" index="0" model="pcie-root"/>
+    <controller type="pci" model="pcie-root-port"/>
+    <controller type="pci" model="pcie-root-port"/>
+    <controller type="pci" model="pcie-root-port"/>
+    <controller type="pci" model="pcie-root-port"/>
+    <controller type="pci" model="pcie-root-port"/>
+    <controller type="pci" index="1" model="dmi-to-pci-bridge">
+      <model name="i82801b11-bridge"/>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x1e" function="0x0"/>
+    </controller>
+    <controller type="pci" index="2" model="pci-bridge">
+      <model name="pci-bridge"/>
+      <target chassisNr="2"/>
+      <address type="pci" domain="0x0000" bus="0x01" slot="0x00" function="0x0"/>
+    </controller>
+    <controller type="pci" index="3" model="pcie-root-port">
+      <model name="ioh3420"/>
+      <target chassis="3" port="0x10"/>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x01" function="0x0" multifunction="on"/>
+    </controller>
+    <controller type="pci" index="4" model="pcie-root-port">
+      <model name="ioh3420"/>
+      <target chassis="4" port="0x11"/>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x01" function="0x1"/>
+    </controller>
+    <controller type="pci" index="5" model="pcie-root-port">
+      <model name="ioh3420"/>
+      <target chassis="5" port="0xa"/>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x01" function="0x2"/>
+    </controller>
+    <controller type="virtio-serial" index="0">
+      <address type="pci" domain="0x0000" bus="0x03" slot="0x00" function="0x0"/>
+    </controller>
+    <!-- interface type='bridge'>
+     <mac address='52:54:00:c2:e4:f6'/>
+      <source bridge='br0'/>
+      <model type='e1000'/>
+      <driver name='vhost' queues='8'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
+    </interface -->
+    <interface type="network">
+      <source network="passthrough"/>
+      <model type="virtio"/>
+    </interface>
+    <serial type="pty">
+      <target port="0"/>
+    </serial>
+    <console type="pty">
+      <target type="serial" port="0"/>
+    </console>
+    <input type="tablet" bus="usb">
+      <address type="usb" bus="0" port="1"/>
+    </input>
+    <input type="mouse" bus="ps2"/>
+    <input type="keyboard" bus="ps2"/>
+    <hostdev mode="subsystem" type="pci" managed="yes">
+      <driver name="vfio"/>
+      <source>
+        <address domain="0x0000" bus="$(VIDEO_BUS)" slot="0x00" function="0x0"/>
+      </source>
+      <address type="pci" domain="0x0000" bus="0x05" slot="0x00" function="0x0"/>
+    </hostdev>
+    <hostdev mode="subsystem" type="pci" managed="yes">
+      <driver name="vfio"/>
+      <source>
+        <address domain="0x0000" bus="$(VIDEO_BUS)" slot="0x00" function="0x1"/>
+      </source>
+      <address type="pci" domain="0x0000" bus="0x04" slot="0x00" function="0x0"/>
+    </hostdev>
+    <hostdev mode="subsystem" type="pci" managed="yes">
+      <driver name="vfio"/>
+      <source>
+        <address domain="0x0000" bus="$(VIDEO_BUS)" slot="0x00" function="0x2"/>
+      </source>
+    </hostdev>
+    <hostdev mode="subsystem" type="pci" managed="yes">
+      <driver name="vfio"/>
+      <source>
+        <address domain="0x0000" bus="$(VIDEO_BUS)" slot="0x00" function="0x3"/>
+      </source>
+    </hostdev>
+    <memballoon model="virtio">
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x05" function="0x0"/>
+    </memballoon>
+  </devices>
+  <seclabel type="none" model="none"/>
+  <seclabel type="dynamic" model="dac" relabel="yes"/>
+  <seclabel type="dynamic" model="selinux" relabel="yes"/>
+</domain>
